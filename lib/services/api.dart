@@ -5,7 +5,7 @@ import 'package:http/http.dart';
 import 'package:shop_app/model/product.dart';
 
 class ApiService {
-  final String apiUrl = "http://192.168.221.188:80/api/products";
+  final String apiUrl = "http://192.168.138.242:80/api/products";
   Future<List<Product>> getProduct() async {
     final res = await http.get(Uri.parse(apiUrl));
     if (res.statusCode == 200) {
@@ -31,6 +31,7 @@ class ApiService {
       'name': product.name,
       'description': product.description,
       'price': product.price,
+      'qty' : product.qty
 
     };
 
@@ -54,6 +55,7 @@ class ApiService {
       'name': product.name,
       'description': product.description,
       'price': product.price,
+      'qty' : product.qty,
 
     };
 

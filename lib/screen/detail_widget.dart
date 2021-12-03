@@ -22,9 +22,10 @@ class _DetailWidgetState extends State<DetailWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Details'),
+        title: Text('${widget.product.name}'),
         actions: [
-          IconButton(onPressed: (){
+          IconButton(tooltip: 'Edit Product',
+              onPressed: (){
             Navigator.push(context, MaterialPageRoute(builder: (context)=>EditScreen(widget.product)));
           }, icon: Icon(Icons.edit)),
 
@@ -37,7 +38,7 @@ class _DetailWidgetState extends State<DetailWidget> {
             children: [
               Row(
                 children: [
-                  Text('Product Name: '),
+                  Text('Product Name:'),
                   SizedBox(width: 20,),
                   Text('${widget.product.name}')
                 ],
@@ -45,7 +46,7 @@ class _DetailWidgetState extends State<DetailWidget> {
               SizedBox(height: 20,),
               Row(
                 children: [
-                  Text('Product Price: '),
+                  Text('Product Price:'),
                   SizedBox(width: 20,),
                   Text('${widget.product.price}')
                 ],
@@ -54,12 +55,20 @@ class _DetailWidgetState extends State<DetailWidget> {
               Row(
 
                 children: [
-                  Text('Product Description: '),
+                  Text('Product Description:'),
                   SizedBox(width: 20,),
                   Text('${widget.product.description}')
                 ],
               ),
               SizedBox(height: 20,),
+              Row(
+
+                children: [
+                  Text('Product Quantity:'),
+                  SizedBox(width: 20,),
+                  Text('${widget.product.qty}')
+                ],
+              ),
               // Image.network('${widget.product.image}')
             ],
           ),

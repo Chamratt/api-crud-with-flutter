@@ -15,13 +15,15 @@ class _EditScreenState extends State<EditScreen> {
   final _productNameController = TextEditingController();
   final _productPriceController = TextEditingController();
   final _productDescriptionController = TextEditingController();
+  final _productQuantityController = TextEditingController();
   int? id;
   @override
   void initState() {
     // TODO: implement initState
     _productNameController.text = widget.product.name!;
     _productDescriptionController.text = widget.product.description!;
-    _productPriceController.text = widget.product.price!;
+    _productPriceController.text = widget.product.price! ;
+    _productQuantityController.text = widget.product.qty!.toString();
     id = widget.product.id!;
     super.initState();
   }
@@ -82,7 +84,7 @@ class _EditScreenState extends State<EditScreen> {
                 SizedBox(height: 20,),
                 TextFormField(
                   keyboardType: TextInputType.name,
-                  textInputAction: TextInputAction.done,
+                  textInputAction: TextInputAction.next,
                   controller: _productDescriptionController,
                   validator: (value) {
                     if (value!.isEmpty) {
@@ -101,8 +103,26 @@ class _EditScreenState extends State<EditScreen> {
                   ),
                 ),
                 SizedBox(height: 20,),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.done,
+                  controller: _productQuantityController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter product quantity';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25)
+                    ),
+                    hintStyle: TextStyle(color: Colors.grey),
+                    hintText: 'Input Product Quantity',
+                    filled: true,
 
-
+                  ),
+                ),
                 SizedBox(height: 20,),
                 Center(
                     child:  Container(
@@ -137,11 +157,12 @@ class _EditScreenState extends State<EditScreen> {
     _productNameController.clear();
     _productPriceController.clear();
     _productDescriptionController.clear();
+    _productQuantityController.clear();
   }
   void upDateProduct(){
     if(_formKey.currentState!.validate()){
       _formKey.currentState!.save();
-      apiService.updateProduct(id!,Product(name: _productNameController.text,price: _productPriceController.text,description: _productDescriptionController.text)
+      apiService.updateProduct(id!,Product(name: _productNameController.text,price: _productPriceController.text,description: _productDescriptionController.text,qty: _productQuantityController.text)
       );
     }
   }

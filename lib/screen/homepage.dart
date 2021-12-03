@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/model/block_product.dart';
 import 'package:shop_app/model/product.dart';
 import 'package:shop_app/screen/add_product.dart';
+import 'package:shop_app/screen/product_list.dart';
 import 'package:shop_app/services/api.dart';
 
 import 'detail_widget.dart';
@@ -19,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   late Future <List<Product>> productList;
   late Future<Product> _product;
   String? id = '';
+  BlockProduct? product;
 
    @override
   void initState() {
@@ -28,76 +32,47 @@ class _HomePageState extends State<HomePage> {
       productList = apiService.getProduct();
     });
   }
+   void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    final notifier = Provider.of<BlockProduct>(context);
+    if(this.product != notifier){
+      this.product = notifier;
+      Future.microtask(() => notifier.getProduct());
+    }
+  }
   @override
   Widget build(BuildContext context) {
+     BlockProduct blockProduct = Provider.of<BlockProduct>(context);
 
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          navigateToAddScreen(context);
-        },
-        child: Icon(Icons.add),
-      ),
-      appBar: AppBar(
-        title: Text('Test With Api'),
-
-      ),
-      body: Container(
-        child: Center(
-          child: RefreshIndicator(
-            onRefresh: refresh,
-            child: FutureBuilder<List<Product>>(
-              future: productList,
-              builder: (context, snapshot) {
-
-               if(snapshot.hasData){
-                 List<Product>? product = snapshot.data;
-                 return ListView.builder(
-                   itemCount: product!.length,
-                   itemBuilder: (BuildContext context,int index){
-                     return Card(
-                       child: InkWell(
-                         child: ListTile(
-                           leading: Icon(Icons.shop_2),
-                           title: Text('${product[index].name}'),
-                           subtitle: Text('\$${product[index].price}',style: TextStyle(color: Colors.redAccent),),
-                           trailing: IconButton(
-                             icon: Icon(Icons.delete),
-                             onPressed: (){
-                              apiService.deleteProduct('${product[index].id}');
-                              setState(() {
-                                productList = apiService.getProduct();
-                              });
-                             },
-                           ),
-
-                         ),
-                         onTap: (){
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailWidget(product[index]),));
-                         },
-                       ),
-                     );
-                   },
-                 );
-               }else if(snapshot.hasError){
-                 return Text('${snapshot.error}');
-               }
-               return CircularProgressIndicator();
-            }),
-          ),
+    return RefreshIndicator(
+      onRefresh: refresh,
+      child: Scaffold(
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            navigateToAddScreen(context);
+          },
+          child: Icon(Icons.add),
         ),
+        appBar: AppBar(
+          title: Text('Test With Api'),
+
+        ),
+        body: blockProduct.productItem == null ? Center(
+          child: CircularProgressIndicator(),
+        ):ProductList()
       ),
     );
   }
   navigateToAddScreen (BuildContext context) async {
-    final result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => AddProduct()),
     );
   }
   Future<void> refresh(){
     setState(() {
-      productList = apiService.getProduct();
+      product!.getProduct();
     });
      return Future.delayed(Duration(seconds: 2));
 
